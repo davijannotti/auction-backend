@@ -38,7 +38,6 @@ collectstatic *args:
 
 fmt:
     ruff format .
-    djlint . --extension=html.j2 --reformat
 
 build:
     uv sync
