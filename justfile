@@ -3,14 +3,11 @@
 # Comando base para rodar manage.py
 manage := "uv run .venv/bin/python3.13 manage.py"
 
-start:
-    {{manage}} runserver
-
 run:
-    {{manage}} runserver 0.0.0.0:8000
+    just manage runserver 8000
 
 debug:
-    {{manage}} runserver
+    just manage runserver
 
 remigrate:
     rm -rf auctions/migrations/*
@@ -20,9 +17,13 @@ remigrate:
 redb:
     rm -f db.sqlite3
     just migrate
+    just populate
 
-create_sample_data:
-    just manage create_sample_data
+populate:
+    just manage populate
+
+create_superuser:
+    just manage createsuperuser
 
 manage *args:
     {{manage}} {{args}}
@@ -37,7 +38,7 @@ collectstatic *args:
     just manage collectstatic {{args}}
 
 fmt:
-    ruff format .
+    .venv/bin/ruff format .
 
 build:
     uv sync
