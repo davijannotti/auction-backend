@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
         # Usuário de teste
         user, created = User.objects.get_or_create(username="admin", defaults={
-            "email": "",
+            "email": "admin@admin.com",
             "is_staff": True,
             "is_superuser": True
         })
