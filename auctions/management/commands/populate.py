@@ -3,21 +3,45 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from auctions.models import Category, Item, Auction
 
-
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         User = get_user_model()
 
-        # Usuário de teste
-        user, created = User.objects.get_or_create(username="admin", defaults={
-            "email": "admin@admin.com",
-            "is_staff": True,
-            "is_superuser": True
-        })
-
+        # Admin user
+        admin, created = User.objects.get_or_create(
+            username="admin",
+            defaults={
+                "email": "admin@example.com",
+                "is_staff": True,
+                "is_superuser": True,
+            },
+        )
         if created:
-            user.set_password("admin")
-            user.save()
+            admin.set_password("admin")
+            admin.save()
+            self.stdout.write(self.style.SUCCESS("Admin user created."))
+        else:
+            self.stdout.write(self.style.WARNING("Admin user already exists."))
+
+        # Test user
+        test_user, created = User.objects.get_or_create(
+            username="testuser",
+            defaults={
+                "email": "testuser@example.com",
+                "first_name": "Test",
+                "last_name": "User",
+                "birth_date": "1990-01-01",
+                "phone_number": "1234567890",
+            },
+        )
+        if created:
+            test_user.set_password("password")
+            test_user.save()
+            self.stdout.write(self.style.SUCCESS("Test user created."))
+        else:
+            self.stdout.write(self.style.WARNING("Test user already exists."))
+
+        self.stdout.write(self.style.SUCCESS("Finished populating the database."))
 
         # Categoria
         category = Category.objects.create(name="Homens peludos")
@@ -34,7 +58,7 @@ class Command(BaseCommand):
         # Leilão
         auction = Auction.objects.create(
             item=item,
-            owner=user,
+            owner=admin,
             start_time=timezone.now(),
             end_time=timezone.now() + timezone.timedelta(days=1),
             current_price=150.00,

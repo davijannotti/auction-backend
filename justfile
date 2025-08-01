@@ -11,7 +11,7 @@ debug:
 
 remigrate:
     rm -rf auctions/migrations/*
-    just makemigrations auctions
+    just makemigrations auctions users
     just redb
 
 redb:

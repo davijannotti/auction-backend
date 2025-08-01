@@ -6,3 +6,5 @@ wheels/
 *.egg-info
 */migrations/*
 db.sqlite3
+users_profile_pics
+auctions_items

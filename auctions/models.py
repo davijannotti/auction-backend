@@ -1,4 +1,3 @@
-from xmlrpc.client import MAXINT
 from django.db import models
 from django.conf import settings
 
@@ -29,7 +28,7 @@ class Item(BaseModel):
         Category, on_delete=models.SET_NULL, null=True, blank=True
     )
     starting_bid = models.DecimalField(max_digits=10, decimal_places=2)
-    max_bid = models.DecimalField(max_digits=10, decimal_places=2, default=MAXINT)
+    max_bid = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     image = models.ImageField(upload_to="auction_items/", blank=True, null=True)
 
     def __str__(self):
@@ -54,7 +53,7 @@ class Auction(BaseModel):
     )
 
     def __str__(self):
-        return f"{self.item.title} - {self.status}"
+        return f"{self.item.name} - {self.status}"
 
 
 class Bid(BaseModel):
@@ -64,4 +63,4 @@ class Bid(BaseModel):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user} -> {self.amount} em {self.auction.item.title}"
+        return f"{self.user} -> {self.amount} em {self.auction.item.name}"
