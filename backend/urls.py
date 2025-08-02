@@ -23,7 +23,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from rest_framework.routers import DefaultRouter
-from auctions.views import CategoryViewSet, ItemViewSet, AuctionViewSet
+from auctions.views import CategoryViewSet, ItemViewSet, AuctionViewSet, BidViewSet
 from users.views import UserViewSet
 
 router = DefaultRouter()
@@ -31,6 +31,7 @@ router.register(r"users", UserViewSet)
 router.register(r"auctions", AuctionViewSet)
 router.register(r"categories", CategoryViewSet)
 router.register(r"items", ItemViewSet)
+router.register(r"bids", BidViewSet)
 
 urlpatterns = [
     path("", ola_view),

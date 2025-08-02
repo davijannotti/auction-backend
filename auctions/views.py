@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from .models import Category, Item, Auction
-from .serializers import CategorySerializer, ItemSerializer, AuctionSerializer
+from .models import Category, Item, Auction, Bid
+from .serializers import CategorySerializer, ItemSerializer, AuctionSerializer, BidSerializer
 
 
 class BaseViewSet(viewsets.ModelViewSet):
@@ -20,3 +20,7 @@ class ItemViewSet(BaseViewSet):
 class AuctionViewSet(BaseViewSet):
     queryset = Auction.objects.all()
     serializer_class = AuctionSerializer
+
+class BidViewSet(BaseViewSet):
+    queryset = Bid.objects.all()
+    serializer_class = BidSerializer

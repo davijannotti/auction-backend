@@ -44,6 +44,7 @@ class Item(BaseModel):
 
 
 class Auction(BaseModel):
+    name = models.CharField(max_length=100)
     item = models.OneToOneField(Item, on_delete=models.CASCADE)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     start_time = models.DateTimeField()
@@ -64,14 +65,14 @@ class Auction(BaseModel):
         ordering = ["item"]
 
     def __str__(self):
-        return f"{self.item.name} - {self.status}"
+        return self.name
 
 
 class Bid(BaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name="bids")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["user"]

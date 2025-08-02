@@ -1,17 +1,11 @@
 # auctions/serializers.py
 from rest_framework import serializers
-from .models import BaseModel, Category, Item, Auction
+from .models import BaseModel, Category, Item, Auction, Bid
 
 
 class BaseModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = BaseModel
-        exclude = [
-            "created_at",
-            "deleted_at",
-            "modified_at",
-            "is_active",
-        ]
 
 
 class CategorySerializer(BaseModelSerializer):
@@ -45,6 +39,7 @@ class AuctionSerializer(BaseModelSerializer):
     class Meta(BaseModelSerializer.Meta):
         model = Auction
         fields = [
+            "name",
             "item",
             "item_name",
             "owner",
@@ -69,3 +64,20 @@ class AuctionSerializer(BaseModelSerializer):
                     f"e o lance máximo ({item.max_bid})."
                 )
         return data
+
+class BidSerializer(BaseModelSerializer):
+    user_name = serializers.StringRelatedField(source="user", read_only=True)
+    item_name = serializers.StringRelatedField(source="item", read_only=True)
+    auction_name = serializers.StringRelatedField(source="auction", read_only=True)
+
+    class Meta(BaseModelSerializer.Meta):
+        model = Bid
+        fields = [
+            "user",
+            "user_name",
+            "item",
+            "item_name",
+            "auction",
+            "auction_name",
+            "amount",
+        ]

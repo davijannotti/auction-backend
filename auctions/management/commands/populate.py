@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-from auctions.models import Category, Item, Auction
+from auctions.models import Category, Item, Auction, Bid
 
 
 class Command(BaseCommand):
@@ -13,6 +13,7 @@ class Command(BaseCommand):
             username="admin",
             defaults={
                 "email": "admin@example.com",
+                "birth_date": "1990-01-01",
                 "is_staff": True,
                 "is_superuser": True,
             },
@@ -68,7 +69,8 @@ class Command(BaseCommand):
             )
 
         # Leilão
-        Auction.objects.create(
+        auction = Auction.objects.create(
+            name = "Buffet",
             item=item,
             owner=admin,
             start_time=timezone.now(),
@@ -77,12 +79,22 @@ class Command(BaseCommand):
             status="ATIVO",
         )
         Auction.objects.create(
+            name = "Buffet",
             item=item2,
             owner=admin,
             start_time=timezone.now(),
             end_time=timezone.now() + timezone.timedelta(days=1),
             current_price=150.00,
             status="ATIVO",
+        )
+
+
+
+        Bid.objects.create(
+            item=item,
+            user=test_user,
+            auction=auction,
+            amount=200.00,
         )
 
         print("Dados de exemplo criados com sucesso!")
