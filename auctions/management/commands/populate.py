@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from auctions.models import Category, Item, Auction
 
+
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         User = get_user_model()
@@ -45,19 +46,38 @@ class Command(BaseCommand):
 
         # Categoria
         category = Category.objects.create(name="Homens peludos")
+        category2 = Category.objects.create(name="Homens belos")
 
         # Item de Leilão
-        item = Item.objects.create(
-            name="Davazoko",
-            description="Um homem de qualidade e pé preto",
-            category=category,
-            starting_bid=150.00,
-            max_bid=1000.00,
-        )
+        for i in range(5):
+            item = Item.objects.create(
+                name="Davazoko",
+                description="Um homem de qualidade e pé preto",
+                category=category,
+                starting_bid=150.00,
+                max_bid=1000.00,
+            )
+
+        for i in range(5):
+            item2 = Item.objects.create(
+                name="AmorSurreal",
+                description="Aquele que encanta todas as mulheres, com um corpo perfeito e uma voz sedutora",
+                category=category2,
+                starting_bid=150.00,
+                max_bid=1000.00,
+            )
 
         # Leilão
-        auction = Auction.objects.create(
+        Auction.objects.create(
             item=item,
+            owner=admin,
+            start_time=timezone.now(),
+            end_time=timezone.now() + timezone.timedelta(days=1),
+            current_price=150.00,
+            status="ATIVO",
+        )
+        Auction.objects.create(
+            item=item2,
             owner=admin,
             start_time=timezone.now(),
             end_time=timezone.now() + timezone.timedelta(days=1),

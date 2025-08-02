@@ -6,10 +6,10 @@ from .models import BaseModel, Category, Item, Auction
 class BaseModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = BaseModel
-        exclude_fields = [
+        exclude = [
             "created_at",
             "deleted_at",
-            "modifided_at",
+            "modified_at",
             "is_active",
         ]
 

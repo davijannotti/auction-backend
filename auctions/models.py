@@ -5,7 +5,7 @@ from django.conf import settings
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     deleted_at = models.DateTimeField(editable=False, blank=True, null=True)
-    modifided_at = models.DateTimeField(
+    modified_at = models.DateTimeField(
         auto_now_add=False, editable=False, blank=True, null=True
     )
     is_active = models.BooleanField(default=True, editable=False)
@@ -16,6 +16,9 @@ class BaseModel(models.Model):
 
 class Category(BaseModel):
     name = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
@@ -28,8 +31,13 @@ class Item(BaseModel):
         Category, on_delete=models.SET_NULL, null=True, blank=True
     )
     starting_bid = models.DecimalField(max_digits=10, decimal_places=2)
-    max_bid = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    max_bid = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
     image = models.ImageField(upload_to="auction_items/", blank=True, null=True)
+
+    class Meta:
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
@@ -52,6 +60,9 @@ class Auction(BaseModel):
         default="AGUARDANDO",
     )
 
+    class Meta:
+        ordering = ["item"]
+
     def __str__(self):
         return f"{self.item.name} - {self.status}"
 
@@ -61,6 +72,9 @@ class Bid(BaseModel):
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name="bids")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["user"]
 
     def __str__(self):
         return f"{self.user} -> {self.amount} em {self.auction.item.name}"

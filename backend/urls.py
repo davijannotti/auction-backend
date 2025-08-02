@@ -27,7 +27,7 @@ from auctions.views import CategoryViewSet, ItemViewSet, AuctionViewSet
 from users.views import UserViewSet
 
 router = DefaultRouter()
-router.register(r'users', UserViewSet)
+router.register(r"users", UserViewSet)
 router.register(r"auctions", AuctionViewSet)
 router.register(r"categories", CategoryViewSet)
 router.register(r"items", ItemViewSet)
