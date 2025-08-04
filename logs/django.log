@@ -1,0 +1,11 @@
+INFO 2025-08-03 15:47:17,328 autoreload 10159 140641390906304 Watching for file changes with StatReloader
+INFO 2025-08-03 15:47:54,940 autoreload 10159 140641390906304 /home/daniel/Desktop/code/projects/auction/auction-backend/auctions/views.py changed, reloading.
+INFO 2025-08-03 15:47:55,469 autoreload 10236 140652352547776 Watching for file changes with StatReloader
+INFO 2025-08-03 15:48:16,951 autoreload 10236 140652352547776 /home/daniel/Desktop/code/projects/auction/auction-backend/auctions/serializers.py changed, reloading.
+INFO 2025-08-03 15:48:17,512 autoreload 10292 140043836820416 Watching for file changes with StatReloader
+INFO 2025-08-03 15:48:44,004 autoreload 10292 140043836820416 /home/daniel/Desktop/code/projects/auction/auction-backend/auctions/models.py changed, reloading.
+INFO 2025-08-03 15:48:44,513 autoreload 10373 140436190866368 Watching for file changes with StatReloader
+INFO 2025-08-03 15:48:56,826 autoreload 10373 140436190866368 /home/daniel/Desktop/code/projects/auction/auction-backend/auctions/models.py changed, reloading.
+INFO 2025-08-03 15:48:57,241 autoreload 10401 139649624386496 Watching for file changes with StatReloader
+INFO 2025-08-03 15:49:08,539 autoreload 10401 139649624386496 /home/daniel/Desktop/code/projects/auction/auction-backend/auctions/models.py changed, reloading.
+INFO 2025-08-03 15:49:08,958 autoreload 10440 140143642332096 Watching for file changes with StatReloader
