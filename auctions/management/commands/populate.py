@@ -70,7 +70,7 @@ class Command(BaseCommand):
 
         # Leilão
         auction = Auction.objects.create(
-            name = "Buffet",
+            name="Buffet",
             item=item,
             owner=admin,
             start_time=timezone.now(),
@@ -79,7 +79,7 @@ class Command(BaseCommand):
             status="ATIVO",
         )
         Auction.objects.create(
-            name = "Buffet",
+            name="Buffet",
             item=item2,
             owner=admin,
             start_time=timezone.now(),
@@ -87,8 +87,6 @@ class Command(BaseCommand):
             current_price=150.00,
             status="ATIVO",
         )
-
-
 
         Bid.objects.create(
             item=item,

@@ -4,6 +4,7 @@ from .models import BaseModel, Category, Item, Auction, Bid
 
 import re
 
+
 class BaseModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = BaseModel
@@ -17,8 +18,10 @@ class CategorySerializer(BaseModelSerializer):
         ]
 
     def validate_name(self, value):
-        if not re.match(r'^[A-Za-zÀ-ÿ\s_#-]+$', value):
-            raise serializers.ValidationError("Name can only contain letters, spaces and symbols (_, -, #).")
+        if not re.match(r"^[A-Za-zÀ-ÿ\s_#-]+$", value):
+            raise serializers.ValidationError(
+                "Name can only contain letters, spaces and symbols (_, -, #)."
+            )
         return value
 
 
@@ -39,24 +42,36 @@ class ItemSerializer(BaseModelSerializer):
 
     def validate(self, data):
         name = data.get("name", getattr(self.instance, "name", None))
-        description = data.get("description", getattr(self.instance, "description", None))
-        starting_bid = data.get("starting_bid", getattr(self.instance, "starting_bid", None))
+        description = data.get(
+            "description", getattr(self.instance, "description", None)
+        )
+        starting_bid = data.get(
+            "starting_bid", getattr(self.instance, "starting_bid", None)
+        )
         max_bid = data.get("max_bid", getattr(self.instance, "max_bid", None))
 
-        if not re.match(r'^[A-Za-zÀ-ÿ\s-]+$', name):
-            raise serializers.ValidationError("Name can only contain letters, spaces and symbols (-).")
-        if not re.match(r'^[A-Za-zÀ-ÿ\s,.-]+$', description):
-            raise serializers.ValidationError("Description can only contain letters, spaces and symbols (-, ,, .).")
+        if not re.match(r"^[A-Za-zÀ-ÿ\s-]+$", name):
+            raise serializers.ValidationError(
+                "Name can only contain letters, spaces and symbols (-)."
+            )
+        if not re.match(r"^[A-Za-zÀ-ÿ\s,.-]+$", description):
+            raise serializers.ValidationError(
+                "Description can only contain letters, spaces and symbols (-, ,, .)."
+            )
         if max_bid:
             if max_bid <= starting_bid:
-                raise serializers.ValidationError("Max bid must be greater than starting bid.")
+                raise serializers.ValidationError(
+                    "Max bid must be greater than starting bid."
+                )
         return data
 
 
 class AuctionSerializer(BaseModelSerializer):
     item_name = serializers.StringRelatedField(source="item", read_only=True)
     owner_name = serializers.StringRelatedField(source="owner", read_only=True)
-    current_price = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True)
+    current_price = serializers.DecimalField(
+        max_digits=10, decimal_places=2, allow_null=True
+    )
 
     class Meta(BaseModelSerializer.Meta):
         model = Auction
@@ -97,6 +112,7 @@ class AuctionSerializer(BaseModelSerializer):
             )
 
         return data
+
 
 class BidSerializer(BaseModelSerializer):
     user_name = serializers.StringRelatedField(source="user", read_only=True)
