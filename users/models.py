@@ -12,7 +12,7 @@ class User(AbstractUser):
     image = models.ImageField(upload_to="users_profile_pics/", blank=True, null=True)
 
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["first_name", "last_name"]
+    REQUIRED_FIELDS = ["first_name", "last_name", "birth_date"]
 
     def __str__(self):
         return self.username

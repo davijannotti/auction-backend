@@ -1,10 +1,11 @@
 from django.db import models
 from django.conf import settings
+from enum import Enum
 
 
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    deleted_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
@@ -46,6 +47,12 @@ class Item(BaseModel):
 
 
 class Auction(BaseModel):
+    class Status(Enum):
+        AGUARDANDO = "Aguardando"
+        ATIVO = "Ativo"
+        ENCERRADO = "Encerrado"
+        CANCELADO = "Cancelado"
+
     name = models.CharField(max_length=100)
     item = models.OneToOneField(Item, on_delete=models.CASCADE)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -56,13 +63,8 @@ class Auction(BaseModel):
     )
     status = models.CharField(
         max_length=20,
-        choices=[
-            ("AGUARDANDO", "Aguardando"),
-            ("ATIVO", "Ativo"),
-            ("ENCERRADO", "Encerrado"),
-            ("CANCELADO", "Cancelado"),
-        ],
-        default="AGUARDANDO",
+        choices=[(status.name, status.value) for status in Status],
+        default=Status.AGUARDANDO.name,
     )
 
     class Meta:
@@ -74,7 +76,6 @@ class Auction(BaseModel):
 
 class Bid(BaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name="bids")
     amount = models.DecimalField(
         max_digits=10, decimal_places=2, null=False, blank=False
