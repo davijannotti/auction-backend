@@ -38,7 +38,13 @@ class Item(BaseModel):
         max_digits=10, decimal_places=2, null=True, blank=True
     )
     image = models.ImageField(upload_to="auction_items/", blank=True, null=True)
-    auction = models.ForeignKey('Auction', on_delete=models.SET_NULL, null=True, blank=True, related_name='items')
+    auction = models.ForeignKey(
+        "Auction",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="items",
+    )
 
     class Meta:
         ordering = ["name"]
@@ -64,7 +70,7 @@ class Auction(BaseModel):
         default=Status.AGUARDANDO.name,
     )
     category = models.ForeignKey(
-        'Category', on_delete=models.SET_NULL, null=True, blank=True
+        "Category", on_delete=models.SET_NULL, null=True, blank=True
     )
 
     class Meta:
@@ -80,7 +86,7 @@ class Auction(BaseModel):
 
 class Bid(BaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    item = models.ForeignKey('Item', on_delete=models.CASCADE)
+    item = models.ForeignKey("Item", on_delete=models.CASCADE)
     amount = models.DecimalField(
         max_digits=10, decimal_places=2, null=False, blank=False
     )

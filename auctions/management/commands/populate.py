@@ -18,7 +18,7 @@ class Command(BaseCommand):
                 "birth_date": "1990-01-01",
                 "is_staff": True,
                 "is_superuser": True,
-            }
+            },
         )
         if created:
             admin.set_password("admin")
@@ -67,19 +67,25 @@ class Command(BaseCommand):
             name="Eletrônicos",
         )
         if created:
-            self.stdout.write(self.style.SUCCESS(f"Category '{category1.name}' created."))
+            self.stdout.write(
+                self.style.SUCCESS(f"Category '{category1.name}' created.")
+            )
 
         category2, created = Category.objects.get_or_create(
             name="Arte e Antiguidades",
         )
         if created:
-            self.stdout.write(self.style.SUCCESS(f"Category '{category2.name}' created."))
+            self.stdout.write(
+                self.style.SUCCESS(f"Category '{category2.name}' created.")
+            )
 
         category3, created = Category.objects.get_or_create(
             name="Veículos",
         )
         if created:
-            self.stdout.write(self.style.SUCCESS(f"Category '{category3.name}' created."))
+            self.stdout.write(
+                self.style.SUCCESS(f"Category '{category3.name}' created.")
+            )
 
         # Create auctions first
         auction1, created = Auction.objects.get_or_create(
@@ -91,7 +97,7 @@ class Command(BaseCommand):
                 "status": "AGUARDANDO",
                 "category": category1,
                 "is_active": True,
-            }
+            },
         )
         if created:
             self.stdout.write(self.style.SUCCESS(f"Auction '{auction1.name}' created."))
@@ -104,7 +110,7 @@ class Command(BaseCommand):
                 "end_time": timezone.now(),
                 "status": "ATIVO",
                 "category": category2,
-            }
+            },
         )
         if created:
             self.stdout.write(self.style.SUCCESS(f"Auction '{auction2.name}' created."))
@@ -117,7 +123,7 @@ class Command(BaseCommand):
                 "end_time": timezone.now(),
                 "status": "ATIVO",
                 "category": category3,
-            }
+            },
         )
         if created:
             self.stdout.write(self.style.SUCCESS(f"Auction '{auction3.name}' created."))
@@ -131,7 +137,7 @@ class Command(BaseCommand):
                 "max_bid": 8000.00,
                 "current_bid": 4500.00,
                 "auction": auction1,
-            }
+            },
         )
         if created:
             self.stdout.write(self.style.SUCCESS(f"Item '{item1.name}' created."))
@@ -144,11 +150,10 @@ class Command(BaseCommand):
                 "max_bid": 15000.00,
                 "current_bid": 8000.00,
                 "auction": auction1,
-            }
+            },
         )
         if created:
             self.stdout.write(self.style.SUCCESS(f"Item '{item2.name}' created."))
-
 
         # Create items for auction2 (Art)
         item3, created = Item.objects.get_or_create(
@@ -159,7 +164,7 @@ class Command(BaseCommand):
                 "max_bid": 10000.00,
                 "current_bid": 2800.00,
                 "auction": auction2,
-            }
+            },
         )
         if created:
             self.stdout.write(self.style.SUCCESS(f"Item '{item3.name}' created."))
@@ -172,7 +177,7 @@ class Command(BaseCommand):
                 "max_bid": 5000.00,
                 "current_bid": 1800.00,
                 "auction": auction2,
-            }
+            },
         )
         if created:
             self.stdout.write(self.style.SUCCESS(f"Item '{item4.name}' created."))
@@ -186,7 +191,7 @@ class Command(BaseCommand):
                 "max_bid": 50000.00,
                 "current_bid": 25000.00,
                 "auction": auction3,
-            }
+            },
         )
         if created:
             self.stdout.write(self.style.SUCCESS(f"Item '{item5.name}' created."))
@@ -201,7 +206,11 @@ class Command(BaseCommand):
             # Update item's current bid
             item3.current_bid = 2800.00
             item3.save()
-            self.stdout.write(self.style.SUCCESS(f"Bid created: {test_user1.username} -> ${bid1.amount} on {item3.name}"))
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Bid created: {test_user1.username} -> ${bid1.amount} on {item3.name}"
+                )
+            )
 
         bid2, created = Bid.objects.get_or_create(
             user=test_user2,
@@ -212,7 +221,11 @@ class Command(BaseCommand):
             # Update item's current bid
             item1.current_bid = 4800.00
             item1.save()
-            self.stdout.write(self.style.SUCCESS(f"Bid created: {test_user2.username} -> ${bid2.amount} on {item1.name}"))
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Bid created: {test_user2.username} -> ${bid2.amount} on {item1.name}"
+                )
+            )
 
         bid3, created = Bid.objects.get_or_create(
             user=test_user2,
@@ -223,6 +236,12 @@ class Command(BaseCommand):
             # Update item's current bid
             item5.current_bid = 27000.00
             item5.save()
-            self.stdout.write(self.style.SUCCESS(f"Bid created: {admin.username} -> ${bid3.amount} on {item5.name}"))
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Bid created: {admin.username} -> ${bid3.amount} on {item5.name}"
+                )
+            )
 
-        self.stdout.write(self.style.SUCCESS("Database populated successfully with sample data!"))
+        self.stdout.write(
+            self.style.SUCCESS("Database populated successfully with sample data!")
+        )

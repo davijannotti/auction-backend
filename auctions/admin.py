@@ -125,23 +125,20 @@ class AuctionAdmin(admin.ModelAdmin):
     form = AuctionForm
     list_display = (
         "name",
-        "item",
         "owner",
         "start_time",
         "end_time",
-        "current_price",
         "status",
     )
     list_filter = ("status", "owner")
-    search_fields = ("name", "item__name")
+    search_fields = ("name",)
 
 
 @admin.register(Bid)
 class BidAdmin(admin.ModelAdmin):
     form = BidForm
-    list_display = ("user", "auction", "amount", "created_at")
-    list_filter = ("auction",)
-    search_fields = ("user__username", "auction__name")
+    list_display = ("user", "amount", "created_at")
+    search_fields = ("user__username",)
 
 
 @admin.register(Category)
@@ -154,6 +151,5 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
     form = ItemForm
-    list_display = ("name", "category", "starting_bid", "max_bid")
-    list_filter = ("category",)
+    list_display = ("name", "starting_bid", "max_bid")
     search_fields = ("name",)
