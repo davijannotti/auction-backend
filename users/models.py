@@ -11,8 +11,8 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     image = models.ImageField(upload_to="users_profile_pics/", blank=True, null=True)
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["first_name", "last_name", "birth_date"]
 
     def __str__(self):
         return self.username
