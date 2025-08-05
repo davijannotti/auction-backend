@@ -39,9 +39,10 @@ class ItemSerializer(BaseModelSerializer):
         fields = BaseModelSerializer.Meta.fields + [
             "name",
             "description",
-            "category",
             "starting_bid",
             "max_bid",
+            "current_bid",
+            "auction",
             "image",
         ]
         read_only_fields = ("id", "created_at", "updated_at")
@@ -77,18 +78,25 @@ class ItemSerializer(BaseModelSerializer):
 
 
 class AuctionSerializer(BaseModelSerializer):
+    items = serializers.SerializerMethodField()
+
     class Meta(BaseModelSerializer.Meta):
         model = Auction
         fields = BaseModelSerializer.Meta.fields + [
             "name",
-            "item",
+            "category",
             "owner",
             "start_time",
             "end_time",
-            "current_price",
             "status",
+            "items",
         ]
         read_only_fields = BaseModelSerializer.Meta.fields + ["owner"]
+
+    def get_items(self, obj):
+        """Retorna todos os itens deste leilão usando a função get_items() do modelo"""
+        items = obj.get_items()
+        return ItemSerializer(items, many=True).data
 
     def validate(self, data):
         data = super().validate(data)
@@ -129,7 +137,7 @@ class BidSerializer(BaseModelSerializer):
         model = Bid
         fields = BaseModelSerializer.Meta.fields + [
             "user",
-            "auction",
+            "item",
             "amount",
         ]
         read_only_fields = BaseModelSerializer.Meta.fields + ["user"]
