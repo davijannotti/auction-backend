@@ -13,4 +13,5 @@ class UserSerializer(serializers.ModelSerializer):
             "birth_date",
             "phone_number",
             "image",
+            "is_active",
         ]

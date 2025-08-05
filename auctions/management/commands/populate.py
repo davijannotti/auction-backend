@@ -89,7 +89,6 @@ class Command(BaseCommand):
         )
 
         Bid.objects.create(
-            item=item,
             user=test_user,
             auction=auction,
             amount=200.00,
