@@ -125,38 +125,27 @@ class BidSerializer(BaseModelSerializer):
         read_only_fields = BaseModelSerializer.Meta.fields + ["user"]
 
     def validate_amount(self, value):
-        item = self.initial_data.get("item")
-        if item:
-            try:
-                item_instance = Item.objects.get(pk=item)
-                auction = item_instance.auction
-            except Item.DoesNotExist:
-                raise serializers.ValidationError("Item does not exist.")
-            except AttributeError:  # Item might not be linked to an auction yet
-                raise serializers.ValidationError("Item is not part of an auction.")
-        elif self.instance:
-            auction = self.instance.item.auction
-        else:
+        item_id = self.initial_data.get("item")
+        if not item_id and self.instance:
+            item_id = self.instance.item.id
+
+        if not item_id:
             raise serializers.ValidationError("Item must be provided for the bid.")
 
-        # Assuming 'current_price' is a field on the Auction model or derived
-        # If current_price is on Item, adjust accordingly
-        if (
-            auction
-            and hasattr(auction, "current_price")
-            and value <= auction.current_price
-        ):
+        try:
+            item_instance = Item.objects.get(pk=item_id)
+        except Item.DoesNotExist:
+            raise serializers.ValidationError("Item does not exist.")
+
+        # Assuming 'current_bid' and 'max_bid' are fields on the Item model
+        if value <= item_instance.current_bid:
             raise serializers.ValidationError(
-                f"Your bid must be higher than the current price ({auction.current_price})."
+                f"Your bid must be higher than the current bid ({item_instance.current_bid})."
             )
 
-        if (
-            auction
-            and auction.item.max_bid is not None
-            and value > auction.item.max_bid
-        ):
+        if item_instance.max_bid is not None and value > item_instance.max_bid:
             raise serializers.ValidationError(
-                f"Your bid cannot be higher than the maximum bid ({auction.item.max_bid})."
+                f"Your bid cannot be higher than the maximum bid ({item_instance.max_bid})."
             )
 
         return value
