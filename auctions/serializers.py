@@ -4,7 +4,9 @@ import re
 
 # Regex patterns for validation
 NAME_REGEX = r"^[A-Za-zÀ-ÿ\s_#-]+$"
-DESCRIPTION_REGEX = r"^[A-Za-zÀ-ÿ\s,.-]+$"
+DESCRIPTION_REGEX = re.compile(
+    r"^[\w\s.,\-:;!?()'\"%&@#/$\[\]{}<>°ºªÀ-ÖØ-öø-ÿ]+$", re.UNICODE
+)
 ITEM_NAME_REGEX = r"^[A-Za-zÀ-ÿ\s-]+$"
 
 
@@ -101,28 +103,8 @@ class AuctionSerializer(BaseModelSerializer):
     def validate(self, data):
         data = super().validate(data)
 
-        item = data.get("item", getattr(self.instance, "item", None))
         start_time = data.get("start_time", getattr(self.instance, "start_time", None))
         end_time = data.get("end_time", getattr(self.instance, "end_time", None))
-        current_price = data.get(
-            "current_price", getattr(self.instance, "current_price", None)
-        )
-
-        if item:
-            if current_price is None:
-                current_price = item.starting_bid
-                data["current_price"] = current_price
-
-            if item.max_bid is not None:
-                if not (item.starting_bid <= current_price <= item.max_bid):
-                    raise serializers.ValidationError(
-                        f"The current price ({current_price}) must be between the starting bid ({item.starting_bid}) "
-                        f"and the max bid ({item.max_bid})."
-                    )
-            elif current_price < item.starting_bid:
-                raise serializers.ValidationError(
-                    f"The current price ({current_price}) must be greater than or equal to the starting bid ({item.starting_bid})."
-                )
 
         if start_time and end_time and start_time >= end_time:
             raise serializers.ValidationError(
@@ -143,24 +125,36 @@ class BidSerializer(BaseModelSerializer):
         read_only_fields = BaseModelSerializer.Meta.fields + ["user"]
 
     def validate_amount(self, value):
-        auction_id = self.initial_data.get("auction")
-
-        if auction_id:
+        item = self.initial_data.get("item")
+        if item:
             try:
-                auction = Auction.objects.get(pk=auction_id)
-            except Auction.DoesNotExist:
-                raise serializers.ValidationError("Auction does not exist.")
+                item_instance = Item.objects.get(pk=item)
+                auction = item_instance.auction
+            except Item.DoesNotExist:
+                raise serializers.ValidationError("Item does not exist.")
+            except AttributeError:  # Item might not be linked to an auction yet
+                raise serializers.ValidationError("Item is not part of an auction.")
         elif self.instance:
-            auction = self.instance.auction
+            auction = self.instance.item.auction
         else:
-            raise serializers.ValidationError("Auction must be provided.")
+            raise serializers.ValidationError("Item must be provided for the bid.")
 
-        if value <= auction.current_price:
+        # Assuming 'current_price' is a field on the Auction model or derived
+        # If current_price is on Item, adjust accordingly
+        if (
+            auction
+            and hasattr(auction, "current_price")
+            and value <= auction.current_price
+        ):
             raise serializers.ValidationError(
                 f"Your bid must be higher than the current price ({auction.current_price})."
             )
 
-        if auction.item.max_bid is not None and value > auction.item.max_bid:
+        if (
+            auction
+            and auction.item.max_bid is not None
+            and value > auction.item.max_bid
+        ):
             raise serializers.ValidationError(
                 f"Your bid cannot be higher than the maximum bid ({auction.item.max_bid})."
             )
@@ -169,11 +163,14 @@ class BidSerializer(BaseModelSerializer):
 
     def validate(self, data):
         data = super().validate(data)
-
-        auction = data.get("auction", getattr(self.instance, "auction", None))
         user = self.context["request"].user
+        item = data.get("item", getattr(self.instance, "item", None))
 
-        if auction and user and auction.owner == user:
-            raise serializers.ValidationError("You cannot bid on your own auction.")
+        if item:
+            auction = item.auction
+            if auction and user and auction.owner == user:
+                raise serializers.ValidationError("You cannot bid on your own auction.")
+        else:
+            raise serializers.ValidationError("Item must be provided for the bid.")
 
         return data
