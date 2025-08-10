@@ -140,6 +140,11 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
     "DATETIME_FORMAT": "%d/%m/%Y %H:%M:%S",
+    'DEFAULT_PARSER_CLASSES': [
+            'rest_framework.parsers.JSONParser',
+            'rest_framework.parsers.MultiPartParser',
+            'rest_framework.parsers.FormParser',
+        ]
 }
 
 CORS_ALLOWED_ORIGINS = [
@@ -147,8 +152,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
 ]
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "auction_items"
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 CACHES = {
     "default": {
