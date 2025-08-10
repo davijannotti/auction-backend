@@ -60,4 +60,8 @@ class BidViewSet(BaseViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        bid = serializer.save(user=self.request.user)
+        item = bid.item
+        if item.current_bid is None or bid.amount > item.current_bid:
+            item.current_bid = bid.amount
+            item.save()
