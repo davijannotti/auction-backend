@@ -1,7 +1,7 @@
 # Define o python da venv (ajuste o caminho se precisar)
 
 # Comando base para rodar manage.py
-manage := "uv run .venv/bin/python3.13 manage.py"
+manage := "python3 manage.py"
 
 run:
     just manage runserver 8000
