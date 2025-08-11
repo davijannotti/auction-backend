@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from users.models import User
 from .models import BaseModel, Category, Item, Auction, Bid
 import re
 
@@ -21,6 +22,30 @@ class BaseModelSerializer(serializers.ModelSerializer):
             "is_active",
         ]
 
+
+class UserStatisticsSerializer(BaseModelSerializer):
+    instance: User|None
+    acquired_items = serializers.SerializerMethodField()
+    auctions_participated = serializers.SerializerMethodField()
+
+    class Meta(BaseModelSerializer.Meta):
+        model = User
+        fields = [
+            "acquired_items",
+            "auctions_participated",
+        ]
+
+    @property
+    def items(self):
+        assert self.instance is not None
+        return self.instance.items
+
+    def get_acquired_items(self, instance):
+        return ItemSerializer(self.items, many=True).data
+
+    def get_auctions_participated(self, instance):
+        auctions = Auction.objects.filter(items__bid__user=instance).distinct()
+        return AuctionSerializer(auctions, many=True).data
 
 class CategorySerializer(BaseModelSerializer):
     class Meta(BaseModelSerializer.Meta):

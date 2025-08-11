@@ -1,6 +1,10 @@
+from typing import TYPE_CHECKING
 from django.db import models
 from django.conf import settings
 from enum import Enum
+
+if TYPE_CHECKING:
+    from django.db.models.fields.related_descriptors import RelatedManager
 
 
 class BaseModel(models.Model):
@@ -45,6 +49,13 @@ class Item(BaseModel):
         blank=True,
         related_name="items",
     )
+    owner = models.ForeignKey(
+        "users.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="items",
+    )
 
     class Meta:
         ordering = ["name"]
@@ -72,6 +83,7 @@ class Auction(BaseModel):
     category = models.ForeignKey(
         "Category", on_delete=models.SET_NULL, null=True, blank=True
     )
+    items: "RelatedManager[Item]"
 
     class Meta:
         ordering = ["name"]
@@ -85,7 +97,7 @@ class Auction(BaseModel):
 
 
 class Bid(BaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
     item = models.ForeignKey("Item", on_delete=models.CASCADE)
     amount = models.DecimalField(
         max_digits=10, decimal_places=2, null=False, blank=False

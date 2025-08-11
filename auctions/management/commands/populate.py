@@ -121,7 +121,20 @@ class Command(BaseCommand):
                 "owner": admin,
                 "start_time": timezone.now(),
                 "end_time": timezone.now(),
-                "status": "ATIVO",
+                "status": "ENCERRADO",
+                "category": category3,
+            },
+        )
+        if created:
+            self.stdout.write(self.style.SUCCESS(f"Auction '{auction3.name}' created."))
+
+        auction4, created = Auction.objects.get_or_create(
+            name="Leilão",
+            defaults={
+                "owner": admin,
+                "start_time": timezone.now(),
+                "end_time": timezone.now(),
+                "status": "CANCELADO",
                 "category": category3,
             },
         )
@@ -137,6 +150,7 @@ class Command(BaseCommand):
                 "max_bid": 8000.00,
                 "current_bid": 4500.00,
                 "auction": auction1,
+                "owner": test_user1,
             },
         )
         if created:
@@ -199,7 +213,7 @@ class Command(BaseCommand):
         # Create bids
         bid1, created = Bid.objects.get_or_create(
             user=test_user1,
-            item=item3,
+            item=item1,
             amount=2800.00,
         )
         if created:

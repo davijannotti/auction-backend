@@ -1,8 +1,11 @@
+from auctions.serializers import UserStatisticsSerializer
 from rest_framework import viewsets, permissions, status
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from rest_framework.decorators import action
+from rest_framework.request import Request
 
 from rest_framework.authentication import SessionAuthentication
 from .models import User
@@ -38,6 +41,12 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
+
+    @action(detail=True, methods=["GET"])
+    def statistics(self, request: Request, pk=id):
+        user = self.get_object()
+        data = UserStatisticsSerializer(instance=user).data
+        return Response(data)
 
     @method_decorator(cache_page(60 * 15))
     def list(self, request, *args, **kwargs):
