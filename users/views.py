@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework.decorators import action
 from rest_framework.request import Request
+from django.db.models import Count
 
 from rest_framework.authentication import SessionAuthentication
 from .models import User
@@ -47,6 +48,12 @@ class UserViewSet(viewsets.ModelViewSet):
         user = self.get_object()
         data = UserStatisticsSerializer(instance=user).data
         return Response(data)
+
+    @action(detail=False, methods=["GET"])
+    def ranking(self, request):
+        ranking = User.objects.annotate(items_count=Count("items")).order_by("-items_count")
+        serializer = UserSerializer(ranking, many=True)
+        return Response(serializer.data)
 
     @method_decorator(cache_page(60 * 15))
     def list(self, request, *args, **kwargs):

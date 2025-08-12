@@ -56,6 +56,7 @@ class Item(BaseModel):
         blank=True,
         related_name="items",
     )
+    bids: "RelatedManager[Bid]"
 
     class Meta:
         ordering = ["name"]
@@ -97,8 +98,8 @@ class Auction(BaseModel):
 
 
 class Bid(BaseModel):
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
-    item = models.ForeignKey("Item", on_delete=models.CASCADE)
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="bids")
+    item = models.ForeignKey("Item", on_delete=models.CASCADE, related_name="bids")
     amount = models.DecimalField(
         max_digits=10, decimal_places=2, null=False, blank=False
     )

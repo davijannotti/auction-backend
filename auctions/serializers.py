@@ -1,5 +1,7 @@
+from django.db.models import Count, Q
 from rest_framework import serializers
 from users.models import User
+from users.serializers import UserSerializer
 from .models import BaseModel, Category, Item, Auction, Bid
 import re
 
@@ -14,8 +16,7 @@ ITEM_NAME_REGEX = r"^[A-Za-zÀ-ÿ\s-]+$"
 class BaseModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = BaseModel
-        fields = [
-            "id",
+        exclude_fields = [
             "created_at",
             "deleted_at",
             "updated_at",
@@ -25,32 +26,48 @@ class BaseModelSerializer(serializers.ModelSerializer):
 
 class UserStatisticsSerializer(BaseModelSerializer):
     instance: User|None
-    acquired_items = serializers.SerializerMethodField()
+    auctions_won = serializers.SerializerMethodField()
+    auctions_lost = serializers.SerializerMethodField()
     auctions_participated = serializers.SerializerMethodField()
+    bids = serializers.SerializerMethodField()
 
     class Meta(BaseModelSerializer.Meta):
         model = User
         fields = [
-            "acquired_items",
+            "id",
+            "auctions_won",
+            "auctions_lost",
             "auctions_participated",
+            "bids",
         ]
 
-    @property
-    def items(self):
-        assert self.instance is not None
-        return self.instance.items
+    # @property
+    # def items(self):
+    #     assert self.instance is not None
+    #     return self.instance.items
 
-    def get_acquired_items(self, instance):
-        return ItemSerializer(self.items, many=True).data
+    def get_auctions_won(self, instance):
+        return ItemSerializer(instance.items, many=True).data
+
+    def get_auctions_lost(self, instance):
+        auctions_lost = Item.objects.filter(bids__user=instance).exclude(Q(owner=instance) | Q(owner__isnull=True)).distinct()
+        return ItemSerializer(auctions_lost, many=True).data
 
     def get_auctions_participated(self, instance):
-        auctions = Auction.objects.filter(items__bid__user=instance).distinct()
+        auctions = Auction.objects.filter(items__bids__user=instance).distinct()
         return AuctionSerializer(auctions, many=True).data
+
+    def get_bids(self, instance):
+        bids = Bid.objects.filter(user=instance)
+        return BidSerializer(bids, many=True).data
 
 class CategorySerializer(BaseModelSerializer):
     class Meta(BaseModelSerializer.Meta):
         model = Category
-        fields = BaseModelSerializer.Meta.fields + ["name"]
+        fields = [
+            "id",
+            "name",
+        ]
 
     def validate_name(self, value):
         if not re.match(NAME_REGEX, value):
@@ -63,13 +80,15 @@ class CategorySerializer(BaseModelSerializer):
 class ItemSerializer(BaseModelSerializer):
     class Meta(BaseModelSerializer.Meta):
         model = Item
-        fields = BaseModelSerializer.Meta.fields + [
+        fields = [
+            "id",
             "name",
             "description",
             "starting_bid",
             "max_bid",
             "current_bid",
             "auction",
+            "owner",
             "image",
         ]
         read_only_fields = ("id", "created_at", "updated_at")
@@ -109,7 +128,8 @@ class AuctionSerializer(BaseModelSerializer):
 
     class Meta(BaseModelSerializer.Meta):
         model = Auction
-        fields = BaseModelSerializer.Meta.fields + [
+        fields = [
+            "id",
             "name",
             "category",
             "owner",
@@ -118,7 +138,7 @@ class AuctionSerializer(BaseModelSerializer):
             "status",
             "items",
         ]
-        read_only_fields = BaseModelSerializer.Meta.fields + ["owner"]
+        read_only_fields = ["owner"]
 
     def get_items(self, obj):
         """Retorna todos os itens deste leilão usando a função get_items() do modelo"""
@@ -142,12 +162,13 @@ class AuctionSerializer(BaseModelSerializer):
 class BidSerializer(BaseModelSerializer):
     class Meta(BaseModelSerializer.Meta):
         model = Bid
-        fields = BaseModelSerializer.Meta.fields + [
+        fields = [
+            "id",
             "user",
             "item",
             "amount",
         ]
-        read_only_fields = BaseModelSerializer.Meta.fields + ["user"]
+        read_only_fields = ["user"]
 
     def validate_amount(self, value):
         item_id = self.initial_data.get("item")

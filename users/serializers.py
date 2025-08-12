@@ -2,8 +2,8 @@ from rest_framework import serializers
 from .models import User
 from django.contrib.auth.password_validation import validate_password
 
-
 class UserSerializer(serializers.ModelSerializer):
+    auctions_won = serializers.SerializerMethodField()
     class Meta:
         model = User
         fields = [
@@ -16,7 +16,11 @@ class UserSerializer(serializers.ModelSerializer):
             "phone_number",
             "image",
             "is_active",
+            "auctions_won"
         ]
+
+    def get_auctions_won(self, instance):
+        return instance.items.count()
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
