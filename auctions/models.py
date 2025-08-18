@@ -84,6 +84,13 @@ class Auction(BaseModel):
     category = models.ForeignKey(
         "Category", on_delete=models.SET_NULL, null=True, blank=True
     )
+    winner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="won_auctions",
+    )
     items: "RelatedManager[Item]"
 
     class Meta:
