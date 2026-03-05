@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django import forms
 from .models import User
+from rest_framework.authtoken.models import Token
 
 
 class UserAdminForm(forms.ModelForm):

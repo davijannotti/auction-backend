@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -162,4 +163,15 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         "LOCATION": "unique-snowflake",
     }
+}
+
+SIMPLE_JWT = {
+    # Define quanto tempo o token de ACESSO (o que você usa no Header) dura
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1), # Aqui ele vai durar 24 horas
+    
+    # Define quanto tempo o token de REFRESH dura (usado para gerar novos access tokens)
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
