@@ -27,6 +27,7 @@ from rest_framework_simplejwt.views import (
 from rest_framework.routers import DefaultRouter
 from auctions.views import CategoryViewSet, ItemViewSet, AuctionViewSet, BidViewSet
 from users.views import UserViewSet, UserRegistrationView
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 router = DefaultRouter()
 router.register(r"users", UserViewSet)
@@ -43,4 +44,7 @@ urlpatterns = [
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api-auth/", include("rest_framework.urls")),
+    path('api/docs/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/docs/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
