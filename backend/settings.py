@@ -133,7 +133,7 @@ AUTH_USER_MODEL = "users.User"
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 5,
+    "PAGE_SIZE": 100,
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
@@ -170,10 +170,10 @@ CACHES = {
 SIMPLE_JWT = {
     # Define quanto tempo o token de ACESSO (o que você usa no Header) dura
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1), # Aqui ele vai durar 24 horas
-    
+
     # Define quanto tempo o token de REFRESH dura (usado para gerar novos access tokens)
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    
+
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
