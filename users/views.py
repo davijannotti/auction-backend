@@ -1,7 +1,12 @@
 from auctions.serializers import UserStatisticsSerializer
 from rest_framework import viewsets, permissions, status
 from rest_framework.generics import CreateAPIView
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework.decorators import action
@@ -10,10 +15,9 @@ from django.db.models import Count
 
 from rest_framework.authentication import SessionAuthentication
 from .models import User
-from .serializers import UserSerializer, UserRegistrationSerializer
+from .serializers import UserSerializer, UserRegistrationSerializer, CustomTokenObtainPairSerializer
 
 from rest_framework.authentication import BaseAuthentication
-
 
 class NoAuth(BaseAuthentication):
     """
@@ -22,6 +26,50 @@ class NoAuth(BaseAuthentication):
 
     def authenticate(self, request):
         return None
+
+
+class CookieTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+
+        if response.status_code == 200:
+            access_token = response.data["access"]
+            refresh_token = response.data["refresh"]
+
+            # Seta o refresh token em HttpOnly Cookie
+            response.set_cookie(
+                key="refresh_token",
+                value=refresh_token,
+                httponly=True,      # JS não consegue ler
+                secure=False,       # True em produção (HTTPS)
+                samesite="Lax",
+                max_age=7 * 24 * 60 * 60  # 7 dias
+            )
+
+            # Remove o refresh do body — só retorna o access
+            del response.data["refresh"]
+
+        return response
+
+
+class CookieTokenRefreshView(APIView):
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = [NoAuth]
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            return Response({"error": "No refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            refresh = RefreshToken(refresh_token)
+            access_token = str(refresh.access_token)
+            return Response({"access": access_token})
+        except (TokenError, InvalidToken):
+            return Response({"error": "Invalid or expired token"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class IsOwnerOrAdmin(permissions.BasePermission):
